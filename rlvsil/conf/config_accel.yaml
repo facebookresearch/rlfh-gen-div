@@ -1,0 +1,172 @@
+# Copyright (c) Facebook, Inc. and its affiliates.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+hydra:
+  job_logging:
+    formatters:
+      simple:
+        format: ${log_fmt}
+  run:
+    dir: "${localdir}"
+
+checkpoint_steps: 50
+evaluation_steps: 35
+log_steps: 5
+training_target_eval_datapoints: 100
+target_eval_datapoints: 500
+seed: 600
+rf_model_dir: "checkpoints/sentiment/best/"
+desired_sentiment: True
+max_text_in_length: 510
+min_text_in_length: 500
+connect: 127.0.0.1:4431
+device: "cuda:0"
+policy_head_device: "${device}"
+ref_device: "${device}"
+rf_device: "${device}"
+discounting: 0.999
+entity: "${wandb_entity}"
+entropy_cost: 0.0
+exp_point: point-A       # spare parameter, useful for wandb grouping
+exp_set: experiment-set  # spare parameter, useful for wandb grouping
+grad_norm_clipping: null
+group: group2
+# Savedir is used for storing the checkpoint(s),
+# including flags and any global settings/stats for the training
+# localdir (which is a subdirectory of savedir) should be used
+# for storing logs and anything local to each instance
+localdir: "${savedir}/peers/${local_name}"
+local_name: "${uid:}"
+log_fmt: "[%(levelname)s:${local_name} %(process)d %(module)s:%(lineno)d %(asctime)s] %(message)s"
+log_level: "info"
+wait_for_grads: 50
+wait_for_members: 1200  # twenty minutes
+normalize_advantages: True
+cluster_job_id: "${slurm_job_id:}"
+cluster_task_id: "${slurm_task_id:}"
+num_actor_batches: 2
+project: main
+reward_clip: null
+reward_scale: 1
+length_penalty: False
+length_penalty_coef: 0.1
+length_penalty_power: 5.0
+eos_reward: False
+eos_reward_coef: 0.1
+eos_required: False
+eos_required_penalty: 0
+savedir: "/checkpoint/${oc.env:USER}/rlvsil/${project}/${group}"
+checkpoint_limit: null
+total_steps: 10_000
+wandb: true
+rl_training: true
+gradient_checkpointing: false
+
+rms_reward_norm: true
+initialisation: 'orthogonal'
+use_global_advantage_norm: false
+
+wandb_run_name:  null
+wandb_tags:  null
+wandb_group:  null
+wandb_entity:  "rlvsil"
+
+model_dir: null
+model_name: "gpt2"
+base_model_name: "${model_name}"
+freeze_layers: 0.8
+policy_split_percentage: 1
+ref_split_percentage: "${freeze_layers}"
+rm_split_percentage: "${freeze_layers}"
+freeze_lm_head: True
+bettertransformer: False
+torchcompile: False
+tie_frozen_layers: True
+parallelize: True
+
+training:  True
+evaluation:  True
+splits:  "test"
+training_evaluation_batches: 10
+log_interval: 6
+epochs: 10
+
+task_dir:  "dataset/ni_data/tasks"
+split_dir: "dataset/ni_data/splits/small_random"
+single_task:  null
+cache_dir:  "dataset/ni_data/cache"
+dataset: "imdb"
+split_tasks: True
+split_task_percentage: [80, 10, 10]
+    # Optional parameters
+max_num_instances_per_task:  null
+max_num_instances_per_eval_task:  null
+pad_to_max_length:  False
+max_new_tokens: 48
+max_source_length: 1024
+max_target_length: 1024
+pad_to_multiple_of: null
+num_pos_examples: 2
+num_neg_examples: 0
+label_pad_token_id: -100
+return_tensors:  "pt"
+add_task_name:  False
+add_task_definition:  True
+
+# Summarisation Data Parameters
+summarisation_dataset_queries: False
+dataset_random_subset: null  # 10 or 50
+dataset_structured_subset: null  # subreddit, "length" or "sentiment"
+evaluation_splits: null
+eval_dataset: null  # or cnndm
+
+# Reward Function Parameters
+reward_function:  "rouge"
+token_id_rf_threshold: 25000
+
+# PPO Parameters
+importance_sampling_correction: False
+use_gae_lambda_advantages: True
+adap_kl_ctrl: False
+kl_approx: 2
+init_kl_coef:  0.05
+kl_reward: True
+target: 6
+horizon: 10000
+gamma: 1
+lam: 0.95
+learn_batch_size: 16
+rollout_batch_size: "${learn_batch_size}"
+batch_size: "${rollout_batch_size}"
+gradient_accumulation_steps: 1
+rollout_accumulation_steps: "${gradient_accumulation_steps}"
+ppo_epochs: 4
+value_head_activation: False
+value_normalisation: 0.0
+rf_value_normalisation: 0.0
+value_normalisation_std: 1.0
+rf_value_normalisation_std: 1.0
+adam_beta1: 0.9
+adam_beta2: 0.999
+adam_eps: 0.00000001
+adam_learning_rate: 0.0001
+appo_clip_policy: 0.2  # 'null' to disable clipping
+appo_clip_baseline: 0.2  # 'null' to disable clipping
+baseline_cost: 0.1
+
+# Generation Parameters
+top_p: 1.0
+top_k: 0
+do_sample: True
+temperature: 1
