@@ -83,6 +83,9 @@ Folders:
 
 For the alpaca farm experiments, we mostly utilised the existing [alpaca_eval](https://github.com/tatsu-lab/alpaca_eval), but for the new datasets, we created a fork of the Alpaca codebase, which can be found here: https://github.com/RobertKirk/stanford_alpaca.
 
+Those datasets can be found here:
+- [Sequential Instructions](https://huggingface.co/datasets/UCL-DARK/sequential-instructions)
+- [In-Distribution Test](https://huggingface.co/datasets/UCL-DARK/alpaca-farm-id-test)
 
 # License
 
